@@ -1,0 +1,23 @@
+{
+  "name": "student-dropout-backend",
+  "version": "1.0.0",
+  "description": "Event-driven student dropout risk detection system using Motia",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": ["motia", "event-driven", "education", "dropout-detection"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "node-fetch": "^3.3.2"
+  }
+}
+
