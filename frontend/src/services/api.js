@@ -1,16 +1,26 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+/* =======================
+   API BASE URL
+======================= */
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  'https://dropout-backend-r596.onrender.com/api';
 
-// Create axios instance
+/* =======================
+   AXIOS INSTANCE
+======================= */
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
-// Add token to requests
+/* =======================
+   REQUEST INTERCEPTOR
+======================= */
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -19,12 +29,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle response errors
+/* =======================
+   RESPONSE INTERCEPTOR
+======================= */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -33,30 +44,35 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
+/* =======================
+   AUTH APIs
+======================= */
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
 };
 
-// Student API
+/* =======================
+   STUDENT APIs
+======================= */
 export const studentAPI = {
   submitEvent: (data) => api.post('/student/event', data),
   getDashboard: () => api.get('/student/dashboard'),
 };
 
-// Mentor API
+/* =======================
+   MENTOR APIs
+======================= */
 export const mentorAPI = {
   getDashboard: () => api.get('/mentor/dashboard'),
-  getStudentDetails: (studentId) => api.get(`/mentor/student/${studentId}`),
+  getStudentDetails: (id) => api.get(`/mentor/student/${id}`),
 };
 
-// Admin API
+/* =======================
+   ADMIN APIs
+======================= */
 export const adminAPI = {
   getOverview: () => api.get('/admin/overview'),
 };
 
 export default api;
-
-
-

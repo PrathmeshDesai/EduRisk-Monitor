@@ -1,16 +1,63 @@
 import express from 'express';
 import { authenticate } from '../middleware/auth.js';
 import { triggerMotiaEvent } from '../config/motia.js';
-import User from '../models/User.js';
 import StudentProfile from '../models/StudentProfile.js';
 import EngagementEvent from '../models/EngagementEvent.js';
 
 const router = express.Router();
 
-// All routes require authentication
+/* =========================
+   AUTH MIDDLEWARE
+========================= */
 router.use(authenticate);
 
-// POST /student/event - Submit engagement event (triggers Motia workflow)
+/* =========================
+   GET /student/dashboard
+========================= */
+router.get('/dashboard', async (req, res) => {
+  try {
+    // Only students allowed
+    if (req.user.role !== 'student') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied',
+      });
+    }
+
+    const studentId = req.user._id;
+
+    // Fetch profile
+    const profile = await StudentProfile.findOne({ userId: studentId });
+
+    // Fetch recent engagement events
+    const events = await EngagementEvent.find({ studentId })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json({
+      success: true,
+      data: {
+        student: {
+          id: req.user._id,
+          name: req.user.name,
+          email: req.user.email,
+        },
+        profile,
+        recentEvents: events,
+      },
+    });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to load dashboard',
+    });
+  }
+});
+
+/* =========================
+   POST /student/event
+========================= */
 router.post('/event', async (req, res) => {
   try {
     const { eventType, eventData } = req.body;
@@ -23,7 +70,7 @@ router.post('/event', async (req, res) => {
       });
     }
 
-    // 1️⃣ Save event in DB
+    // 1️⃣ Save engagement event
     const engagementEvent = await EngagementEvent.create({
       studentId,
       eventType,
@@ -56,5 +103,3 @@ router.post('/event', async (req, res) => {
 });
 
 export default router;
-
-

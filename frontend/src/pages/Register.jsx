@@ -21,7 +21,14 @@ const Register = ({ onLogin }) => {
     setLoading(true);
 
     try {
-      const response = await authAPI.register(formData);
+    
+  const payload = {
+          ...formData,
+        year: formData.role === 'student' ? Number(formData.year) : undefined,
+     };
+
+    const response = await authAPI.register(payload);
+
       
       if (response.data.success) {
         onLogin(response.data.data.user, response.data.data.token);
