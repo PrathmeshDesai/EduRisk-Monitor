@@ -18,9 +18,10 @@ const PORT = process.env.PORT || 5000;
    CORS CONFIG (FIXED)
 ======================= */
 const allowedOrigins = [
-  'http://localhost:5173',                 // local dev
-  'https://your-frontend-url.vercel.app',  // production
+  'http://localhost:5173',
+  'https://edurisk-monitor-frontend.vercel.app',
 ];
+
 
 app.use(
   cors({
@@ -103,7 +104,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-
-
-
